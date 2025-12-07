@@ -1,0 +1,28 @@
+services:
+  # Backend Service
+  - type: web
+    name: rag-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    healthCheckPath: /health
+    
+  # Frontend Service
+  - type: web
+    name: rag-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: VITE_API_BASE
+        fromService:
+          type: web
+          name: rag-backend
+          envVarKey: RENDER_EXTERNAL_URL
